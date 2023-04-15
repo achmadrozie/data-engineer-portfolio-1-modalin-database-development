@@ -9,7 +9,7 @@ First thing first, in order to capture all of the files uploaded as follow:
 4. 2 PNG File (1 PNG File for ERD of Database, 1  PNG File for Logo of Modalin Company)
 
 
-The most critical part to understand overall the project as a <u>__report__</u> - can check on this file:
+The most critical part to understand overall the project as a <u>report</u> - can check on this file:
  
 **Pacmann Project 1 - SQL - Modalin Database Development.pdf**
 
