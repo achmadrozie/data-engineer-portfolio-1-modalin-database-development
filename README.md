@@ -15,15 +15,20 @@ The most critical part to understand overall the project as a REPORT - can check
  
 **Pacmann Project 1 - SQL - Modalin Database Development.pdf**
 
+
+
 **2. SQL FILE**
 After that, for the SQL of database development, you could check these files:
 1. modalin.mssql
 2. transactional query.mssql
 3. analytical query.mssql
 
+
 **3. ERD**
 and info related to the ERD is available on picture with file name:
 1. ERD Final.png
+
+
 
 **4. DATASET**
 There are the dummy datasets that we used to fill the database as follow:
@@ -33,9 +38,13 @@ There are the dummy datasets that we used to fill the database as follow:
 4. Advertisement
 5. Bid
 
+
+
 **5. PYTHON CODE- to develop dummy dataset**
 In other side, since we are generate the dataset using python, the **code for dataset generation** is attached on file with name:
 1. Pacmann Project 1 - SQL - Data Test Generation.ipynb
+
+
 
 **6. Misscelaneous**
 1. Modalin.png (logo that i've made to complete the project as company logo)
