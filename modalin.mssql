@@ -1,0 +1,310 @@
+-- Create Users table
+CREATE TABLE Users (
+    user_id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    contact TEXT NOT NULL
+);
+
+-- Create City table
+CREATE TABLE City (
+    kota_id SERIAL PRIMARY KEY,
+    nama_kota TEXT NOT NULL,
+    latitude NUMERIC(10,6) NOT NULL,
+    longitude NUMERIC(10,6) NOT NULL
+);
+
+-- Create Car table
+CREATE TABLE Car (
+    product_id SERIAL PRIMARY KEY,
+    brand TEXT NOT NULL,
+    model TEXT NOT NULL,
+    body_type TEXT NOT NULL,
+    year INT NOT NULL,
+    price NUMERIC(20) NOT NULL,
+    kota_id INT NOT NULL REFERENCES City(kota_id)
+);
+
+-- Create Advertisement table
+CREATE TABLE Advertisement (
+    ad_id SERIAL PRIMARY KEY,
+    product_id INT UNIQUE REFERENCES Car(product_id),
+    date_post DATE NOT NULL,
+    status TEXT NOT NULL,
+	user_id INT NOT NULL REFERENCES Users(user_id)
+);
+
+CREATE TABLE Bid (
+    bid_id SERIAL PRIMARY KEY,
+    bid_price NUMERIC(20) NOT NULL,
+    bid_status TEXT NOT NULL,
+    bid_date DATE NOT NULL,
+    ad_id INT NOT NULL REFERENCES Advertisement(ad_id),
+    buyer_id INT NOT NULL REFERENCES Users(user_id)
+);
+
+/* business rule addition */
+
+ALTER TABLE Car
+ADD CONSTRAINT CHK_Car_Price CHECK (price > 0);
+
+ALTER TABLE Advertisement
+ADD CONSTRAINT CHK_Advertisement_Status CHECK (status IN ('Available', 'Sold'));
+
+ALTER TABLE Bid
+ADD CONSTRAINT CHK_Bid_Price CHECK (bid_price > 0);
+
+ALTER TABLE Bid
+ADD CONSTRAINT UQ_Bid_User_Advertisement UNIQUE (buyer_id, ad_id);
+
+
+CREATE FUNCTION check_bid_user(bid_row Bid) RETURNS boolean AS $$
+BEGIN
+    RETURN NOT EXISTS (
+        SELECT 1 
+        FROM Advertisement 
+        WHERE ad_id = bid_row.ad_id 
+            AND user_id = bid_row.buyer_id
+    );
+END;
+$$ LANGUAGE plpgsql;
+
+ALTER TABLE Bid 
+ADD CONSTRAINT CHK_Bid_BuyerSeller 
+CHECK (check_bid_user(Bid) = true);
+
+/* data upload */
+
+
+-- users
+INSERT INTO users (user_id, name, contact) VALUES
+(1, 'Katherine Boyer', '108.974.5453'),
+(2, 'James Willis', '+1-628-723-0541x06219'),
+(3, 'Jennifer West', '357-752-0661x2290'),
+(4, 'Danielle Thomas', '001-800-828-8763x0577'),
+(5, 'Brooke Johnson', '7168259976'),
+(6, 'Melanie Daniels', '001-034-541-9420x839'),
+(7, 'Aaron Howell', '(420)014-0732x58567'),
+(8, 'Theodore Crawford', '+1-683-835-6889x5960'),
+(9, 'Sherri Wells', '+1-101-495-9576x7273'),
+(10, 'Tina Perez', '001-583-954-5476x7737'),
+(11, 'Ross Wilson', '212658136'),
+(12, 'Thomas Freeman', '+1-586-989-5973'),
+(13, 'Amanda Brown', '404.572.6668x5718'),
+(14, 'Wendy Rowe', '486.952.9964x370'),
+(15, 'Deanna Lewis', '(079)593-9037'),
+(16, 'Stacy Coffey', '711-422-1012'),
+(17, 'Julie Francis', '+1-501-094-9657x266'),
+(18, 'Steven Rowe', '(207)212-9629x17439'),
+(19, 'Eugene Rogers', '001-997-770-8698x622'),
+(20, 'Maxwell Miles', '878-905-8052x17527'),
+(21, 'Michael Gonzalez', '001-535-631-3953x97921'),
+(22, 'Pamela Warren', '(485)770-5257x486'),
+(23, 'Brent Andersen', '970-913-2614'),
+(24, 'Wendy Adams', '8931451656'),
+(25, 'Katherine Perry', '907.953.1399x97545'),
+(26, 'Jessica Miller', '(296)365-1757'),
+(27, 'April Davis', '7806951214'),
+(28, 'Aaron Rose', '(482)956-8252'),
+(29, 'Traci Mejia', '+1-558-559-4613x85634'),
+(30, 'Shannon Harris', '+1-015-858-6707'),
+(31, 'Danielle Kelley', '7284717105'),
+(32, 'Tyrone Casey', '001-973-489-1112x1923'),
+(33, 'Glenn Le', '2159136569'),
+(34, 'Donald Simmons', '(894)016-9576'),
+(35, 'Devin Malone', '305.466.0871'),
+(36, 'Laura Wilson', '+1-544-393-5731x23663'),
+(37, 'Kenneth Price', '001-059-566-6100x2704'),
+(38, 'John Rogers', '(218)142-4872'),
+(39, 'Mario Cook', '(117)830-2922'),
+(40, 'Sara Santos', '(164)310-0571x56922'),
+(41, 'Connie Bullock', '281.588.1682x0548'),
+(42, 'Amanda Green', '8948823324'),
+(43, 'Haley Ellison', '352-041-2051'),
+(44, 'Jeffrey Mejia', '001-497-197-6169x2733'),
+(45, 'Grace Wolf', '205-431-2378'),
+(46, 'Amber Hill', '410.476.6221x30070'),
+(47, 'Nicholas Banks', '(245)131-2151x587'),
+(48, 'Tracy Lopez', '+1-568-657-0723x35695'),
+(49, 'Elizabeth Mora', '1214890244'),
+(50, 'Gregory Morgan', '214-455-0149x907');
+
+-- city
+INSERT INTO city (kota_id, nama_kota, latitude, longitude)
+VALUES (3171, 'Kota Jakarta Pusat', -6.186486, 106.834091),
+(3172, 'Kota Jakarta Utara', -6.121435, 106.774124),
+(3173, 'Kota Jakarta Barat', -6.1352, 106.813301),
+(3174, 'Kota Jakarta Selatan', -6.300641, 106.814095),
+(3175, 'Kota Jakarta Timur', -6.264451, 106.895859),
+(3573, 'Kota Malang', -7.981894, 112.626503),
+(3578, 'Kota Surabaya', -7.289166, 112.734398),
+(3471, 'Kota Yogyakarta', -7.797224, 110.368797),
+(3273, 'Kota Bandung', -6.9147444, 107.6098111),
+(1371, 'Kota Padang', -0.95, 100.3530556),
+(1375, 'Kota Bukittinggi', -0.3055556, 100.3691667),
+(6471, 'Kota Balikpapan', -1.2635389, 116.8278833),
+(6472, 'Kota Samarinda', -0.502183, 117.153801),
+(7371, 'Kota Makassar', -5.1333333, 119.4166667),
+(5171, 'Kota Denpasar', -8.65629, 115.222099);
+
+-- car
+INSERT INTO car (product_id, brand, model, body_type, year, price, kota_id)
+VALUES
+(1, 'Toyota', 'Toyota Yaris', 'Hatchback', 2016, 175000000, 3171),
+(2, 'Toyota', 'Toyota Yaris', 'Hatchback', 2018, 215000000, 3175),
+(3, 'Toyota', 'Toyota Yaris', 'Hatchback', 2014, 162000000, 3172),
+(4, 'Toyota', 'Toyota Yaris', 'Hatchback', 2020, 220000000, 6472),
+(5, 'Toyota', 'Toyota Yaris', 'Hatchback', 2012, 124000000, 3578),
+(6, 'Toyota', 'Toyota Agya', 'Hatchback', 2019, 114000000, 3175),
+(7, 'Toyota', 'Toyota Agya', 'Hatchback', 2014, 97000000, 3172),
+(8, 'Toyota', 'Toyota Agya', 'Hatchback', 2016, 110000000, 7371),
+(9, 'Toyota', 'Toyota Agya', 'Hatchback', 2022, 155500000, 5171),
+(10, 'Toyota', 'Toyota Agya', 'Hatchback', 2017, 115500000, 7371),
+(11, 'Toyota', 'Toyota Calya', 'Wagon', 2019, 130000000, 3171),
+(12, 'Toyota', 'Toyota Calya', 'Wagon', 2019, 137000000, 3578),
+(13, 'Toyota', 'Toyota Calya', 'Wagon', 2017, 115500000, 3273),
+(14, 'Toyota', 'Toyota Calya', 'Wagon', 2016, 104000000, 3273),
+(15, 'Toyota', 'Toyota Calya', 'Wagon', 2016, 107000000, 3573),
+(16, 'Daihatsu', 'Daihatsu Ayla', 'Hatchback', 2016, 83000000, 3573),
+(17, 'Daihatsu', 'Daihatsu Ayla', 'Hatchback', 2019, 120000000, 7371),
+(18, 'Daihatsu', 'Daihatsu Ayla', 'Hatchback', 2015, 96000000, 3171),
+(19, 'Daihatsu', 'Daihatsu Ayla', 'Hatchback', 2017, 115000000, 3173),
+(20, 'Daihatsu', 'Daihatsu Ayla', 'Hatchback', 2017, 113000000, 3173),
+(21, 'Daihatsu', 'Daihatsu Terios', 'SUV', 2018, 190000000, 3573),
+(22, 'Daihatsu', 'Daihatsu Terios', 'SUV', 2022, 223000000, 3273),
+(23, 'Daihatsu', 'Daihatsu Terios', 'SUV', 2019, 189900000, 3573),
+(24, 'Daihatsu', 'Daihatsu Terios', 'SUV', 2017, 166000000, 6471),
+(25, 'Daihatsu', 'Daihatsu Terios', 'SUV', 2018, 201000000, 3174),
+(26, 'Daihatsu', 'Daihatsu Xenia', 'MPV', 2019, 170000000, 3173),
+(27, 'Daihatsu', 'Daihatsu Xenia', 'MPV', 2022, 220500000, 3171),
+(28, 'Daihatsu', 'Daihatsu Xenia', 'MPV', 2017, 135000000, 5171),
+(29, 'Daihatsu', 'Daihatsu Xenia', 'MPV', 2014, 100000000, 3578),
+(30, 'Daihatsu', 'Daihatsu Xenia', 'MPV', 2018, 159000000, 6472),
+(31, 'Honda', 'Honda Jazz', 'Hatchback', 2018, 236000000, 3172),
+(32, 'Honda', 'Honda Jazz', 'Hatchback', 2019, 250000000, 5171),
+(33, 'Honda', 'Honda Jazz', 'Hatchback', 2018, 216000000, 1371),
+(34, 'Honda', 'Honda Jazz', 'Hatchback', 2015, 192000000, 3578),
+(35, 'Honda', 'Honda Jazz', 'Hatchback', 2013, 178000000, 3172),
+(36, 'Honda', 'Honda CR-V', 'SUV', 2018, 415000000, 3171),
+(37, 'Honda', 'Honda CR-V', 'SUV', 2017, 345000000, 3573),
+(38, 'Honda', 'Honda CR-V', 'SUV', 2009, 116000000, 6471),
+(39, 'Honda', 'Honda CR-V', 'SUV', 2016, 269000000, 3471),
+(40, 'Honda', 'Honda CR-V', 'SUV', 2018, 398500000, 3172),
+(41, 'Honda', 'Honda Civic', 'Hatchback', 2018, 350000000, 5171),
+(42, 'Honda', 'Honda Civic', 'Sedan', 2010, 165000000, 3171),
+(43, 'Honda', 'Honda Civic', 'Sedan', 2013, 186000000, 3172),
+(44, 'Honda', 'Honda Civic', 'Sedan', 2013, 179000000, 1375),
+(45, 'Honda', 'Honda Civic', 'Hatchback', 2019, 397500000, 3173),
+(46, 'Suzuki', 'Suzuki Ertiga', 'MPV', 2015, 125000000, 3173),
+(47, 'Suzuki', 'Suzuki Ertiga', 'MPV', 2018, 178000000, 6472),
+(48, 'Suzuki', 'Suzuki Ertiga', 'MPV', 2016, 168000000, 5171),
+(49, 'Suzuki', 'Suzuki Ertiga', 'MPV', 2012, 100000000, 3171),
+(50, 'Suzuki', 'Suzuki Ertiga', 'MPV', 2018, 167000000, 3175);
+
+-- advertisement
+INSERT INTO Advertisement (ad_id, product_id, date_post, status, user_id)
+VALUES
+(1, 1, '2022-05-03', 'Sold', 18),
+(2, 2, '2022-01-13', 'Sold', 22),
+(3, 3, '2022-03-05', 'Sold', 36),
+(4, 4, '2023-12-08', 'Available', 1),
+(5, 5, '2023-02-20', 'Sold', 5),
+(6, 6, '2022-06-24', 'Sold', 7),
+(7, 7, '2022-02-22', 'Available', 9),
+(8, 8, '2022-05-14', 'Sold', 17),
+(9, 9, '2023-01-25', 'Sold', 22),
+(10, 10, '2023-04-27', 'Sold', 1),
+(11, 11, '2023-11-17', 'Sold', 44),
+(12, 12, '2023-09-22', 'Sold', 24),
+(13, 13, '2022-11-06', 'Available', 32),
+(14, 14, '2023-03-11', 'Sold', 36),
+(15, 15, '2023-02-24', 'Sold', 25),
+(16, 16, '2023-01-07', 'Available', 41),
+(17, 17, '2023-01-12', 'Available', 26),
+(18, 18, '2022-11-10', 'Sold', 49),
+(19, 19, '2022-09-16', 'Available', 10),
+(20, 20, '2023-07-25', 'Sold', 3),
+(21, 21, '2022-03-15', 'Available', 2),
+(22, 22, '2023-06-22', 'Sold', 28),
+(23, 23, '2023-01-04', 'Available', 33),
+(24, 24, '2023-12-03', 'Available', 28),
+(25, 25, '2022-09-13', 'Available', 35),
+(26, 26, '2023-01-11', 'Sold', 31),
+(27, 27, '2022-09-11', 'Sold', 23),
+(28, 28, '2022-11-21', 'Available', 27),
+(29, 29, '2022-12-28', 'Available', 24),
+(30, 30, '2022-12-03', 'Available', 49),
+(31, 31, '2023-09-10', 'Available', 42),
+(32, 32, '2023-07-12', 'Available', 35),
+(33, 33, '2023-09-04', 'Available', 38),
+(34, 34, '2023-07-02', 'Available', 30),
+(35, 35, '2022-06-15', 'Sold', 20),
+(36, 36, '2023-01-06', 'Sold', 34),
+(37, 37, '2022-06-17', 'Available', 35),
+(38, 38, '2023-04-19', 'Sold', 6),
+(39, 39, '2023-09-08', 'Available', 21),
+(40, 40, '2023-07-02', 'Available', 13),
+(41, 41, '2022-01-07', 'Sold', 37),
+(42, 42, '2022-02-20', 'Sold', 6),
+(43, 43, '2023-09-18', 'Available', 35),
+(44, 44, '2022-08-16', 'Sold', 50),
+(45, 45, '2022-05-23', 'Sold', 22),
+(46, 46, '2023-04-27', 'Available', 40),
+(47, 47, '2022-10-20', 'Sold', 22),
+(48, 48, '2022-12-02', 'Sold', 30),
+(49, 49, '2023-11-28', 'Sold', 21),
+(50, 50, '2023-04-25', 'Sold', 22);
+	
+-- bid
+INSERT INTO bid (bid_id, bid_price, bid_status, bid_date, ad_id, buyer_id)
+VALUES 
+(1, 113726000, 'Accepted', '2022-07-09', 7, 3),
+(2, 199385000, 'Rejected', '2023-06-28', 5, 12),
+(3, 135404000, 'Accepted', '2023-12-08', 13, 3),
+(4, 214367000, 'Placed', '2023-02-01', 24, 50),
+(5, 217524000, 'Placed', '2022-02-22', 14, 13),
+(6, 105566000, 'Accepted', '2023-10-16', 22, 36),
+(7, 109632000, 'Accepted', '2023-09-26', 37, 20),
+(8, 238169000, 'Rejected', '2023-01-13', 49, 40),
+(9, 213871000, 'Rejected', '2023-09-22', 35, 32),
+(10, 233710000, 'Placed', '2022-12-27', 15, 41),
+(11, 168652000, 'Placed', '2023-06-18', 36, 15),
+(12, 219738000, 'Accepted', '2023-01-07', 49, 17),
+(13, 195293000, 'Placed', '2023-04-13', 47, 45),
+(14, 115656000, 'Rejected', '2023-08-25', 28, 48),
+(15, 226828000, 'Placed', '2022-09-15', 39, 44),
+(16, 111568000, 'Placed', '2022-08-07', 17, 32),
+(17, 192287000, 'Rejected', '2023-07-21', 43, 17),
+(18, 128474000, 'Rejected', '2022-09-12', 23, 23),
+(19, 213560000, 'Placed', '2023-02-18', 44, 20),
+(20, 184530000, 'Accepted', '2023-01-25', 41, 46),
+(21, 191322000, 'Placed', '2022-07-03', 43, 48),
+(22, 137744000, 'Accepted', '2022-12-03', 48, 50),
+(23, 114983000, 'Rejected', '2023-09-10', 27, 43),
+(24, 176334000, 'Accepted', '2023-03-18', 34, 40),
+(25, 131343000, 'Rejected', '2022-10-13', 38, 26),
+(26, 135655000, 'Accepted', '2022-06-15', 49, 50),
+(27, 218265000, 'Accepted', '2023-01-06', 43, 37),
+(28, 235487000, 'Rejected', '2022-06-17', 31, 45),
+(29, 196731000, 'Placed', '2023-02-09', 45, 36),
+(30, 153286000, 'Accepted', '2023-07-02', 46, 32),
+(31, 151667000, 'Rejected', '2022-01-07', 39, 49),
+(32, 160536000, 'Placed', '2023-02-11', 34, 49),
+(33, 134987000, 'Rejected', '2022-08-16', 45, 33),
+(34, 167332000, 'Rejected', '2023-06-13', 41, 50),
+(35, 133057000, 'Rejected', '2022-10-20', 50, 45),
+(36, 132064000, 'Rejected', '2022-06-28', 50, 47),
+(37, 210300000, 'Accepted', '2023-04-25', 44, 42),
+(38, 150454000, 'Placed', '2023-01-27', 44, 44),
+(39, 231196000, 'Accepted', '2022-09-13', 44, 40),
+(40, 177568000, 'Placed', '2023-09-27', 49, 45),
+(41, 114394000, 'Accepted', '2022-10-13', 45, 42),
+(42, 222040000, 'Rejected', '2023-04-21', 49, 46),
+(43, 215139000, 'Rejected', '2023-04-23', 50, 25),
+(44, 172095000, 'Accepted', '2022-03-04', 32, 50),
+(45, 230143000, 'Rejected', '2022-08-18', 45, 48),
+(46, 242059000, 'Placed', '2023-06-08', 50, 46),
+(47, 221479000, 'Rejected', '2023-12-19', 47, 49),
+(48, 201318000, 'Placed', '2022-05-10', 49, 25),
+(49, 193749000, 'Accepted', '2022-10-01', 50, 20),
+(50, 143193000, 'Placed', '2022-05-17', 50, 50);
+

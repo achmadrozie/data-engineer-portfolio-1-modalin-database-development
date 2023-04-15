@@ -1,0 +1,91 @@
+-- CASE 1 - Look for car with year >= 2015
+SELECT
+	c.product_id
+	, c.brand
+	, c.model
+	, c.year
+	, c.price
+FROM car c
+WHERE 1=1
+	AND year >= 2015
+ORDER BY year;
+
+-- CASE 2 - Add 1 new row into Bid
+INSERT INTO bid (bid_id, bid_price, bid_status, bid_date, ad_id, buyer_id)
+VALUES 
+(50, 250000000, 'Placed', '2022-06-17',20,24);
+
+-- CASE 3 - Look all car that are offered by 1 account, ordered by the latest.
+SELECT
+	a.user_id
+	, COUNT(DISTINCT a.product_id) count_product
+FROM car c
+LEFT JOIN advertisement a
+	ON c.product_id = a.product_id 
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 10;
+
+			-- GOT THE USER_ID = 22 THAT WE NEED TO DEEP DIVE SINCE HE OFFER HIGHEST QUANTITY OF PRODUCT COMPARED WITH OTHER USERS
+SELECT 
+	 c.product_id
+	 , c.brand
+	 , c.model
+	 , c.year
+	 , c.price
+	 , a.date_post
+FROM car c
+LEFT JOIN advertisement a
+	ON c.product_id = a.product_id 
+WHERE user_id = 22
+ORDER BY date_post DESC;
+
+-- CASE 4 - Look all car that contained “Yaris” and ordered by the lowest price
+
+SELECT
+	c.product_id
+	, c.brand
+	, c.model
+	, c.year
+	, c.price
+FROM car c
+WHERE 1=1
+	AND LOWER(model) LIKE '%yaris%'
+ORDER BY price;
+
+-- CASE 5 - Look nearest ad that located in 1 city consider latitude and longitude
+SELECT
+	kota_id
+	, COUNT(DISTINCT product_id) count_product
+FROM car
+GROUP BY 1
+ORDER BY 2 DESC;
+
+------ got that kota_id = 3171 has highest quantity of car offered
+
+WITH cte AS (
+SELECT
+	car.product_id
+	, car.brand
+	, car.model
+	, car.year
+	, car.price
+	, city.latitude
+	, city.longitude
+	, LEAD(latitude, 1) OVER(ORDER BY product_id) latitude_2nd_product
+	, LEAD(longitude, 1) OVER(ORDER BY product_id) longitude_2nd_product
+FROM car car
+LEFT JOIN city city
+	ON car.kota_id = city.kota_id
+WHERE car.kota_id = 3173
+LIMIT 2
+)
+	
+SELECT
+	cte.product_id
+	, cte.brand
+	, cte.model
+	, cte.year
+	, cte.price
+	, ROUND(((longitude_2nd_product - longitude)^2 + (latitude_2nd_product - latitude)^2)^0.5,1) distance
+FROM cte;

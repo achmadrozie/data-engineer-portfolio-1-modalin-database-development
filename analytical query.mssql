@@ -1,0 +1,113 @@
+-- CASE 1 - Popularity of each car that receives Bid
+SELECT
+	c.model
+	, COUNT(DISTINCT c.product_id) count_product
+	, COUNT(DISTINCT b.bid_id) count_bid
+FROM car c
+LEFT JOIN advertisement a
+	ON c.product_id = a.product_id
+LEFT JOIN bid b
+	ON a.ad_id = b.ad_id
+GROUP BY 1
+ORDER BY 3 DESC;
+
+-- CASE 2 - Compare car price with an average price per city
+
+SELECT
+	city.nama_kota
+	, car.brand
+	, car.model
+	, car.year
+	, car.price
+	, ROUND(AVG(car.price) OVER(PARTITION BY city.nama_kota),1) avg_car_city
+FROM car
+LEFT JOIN city
+	ON city.kota_id = car.kota_id
+ORDER BY 6,4
+
+-- CASE 3 - Compare first bid and next bid in one certain user
+SELECT 
+	c.model
+	, a.user_id
+	, b.bid_date
+	, LEAD(b.bid_date,1) OVER(PARTITION BY user_id ORDER BY bid_date) next_bid_price
+	,  b.bid_price
+	, LEAD(b.bid_price,1) OVER(PARTITION BY user_id ORDER BY bid_date) next_bid_price
+FROM car c
+LEFT JOIN advertisement a
+	ON c.product_id = a.product_id
+LEFT JOIN bid b
+	ON a.ad_id = b.bid_id
+WHERE 1=1
+	AND LOWER(c.model) LIKE '%ertiga%'
+ORDER BY 3;
+
+-- CASE 4 - Compare the percentage difference in the average car price by model and the average bid price offered by customers in the last 6 months
+WITH cte AS (
+SELECT
+	DISTINCT c.model
+	, COALESCE(ROUND(AVG(c.price),2),0) avg_price 
+    , COALESCE(ROUND(AVG(CASE 
+        WHEN EXTRACT(EPOCH FROM CURRENT_DATE - b.bid_date::timestamp) / 86400 <= 180 
+        THEN b.bid_price 
+        ELSE NULL 
+    END),2),0) AS avg_bid_6month	
+FROM car c
+LEFT JOIN advertisement a
+	ON c.product_id = a.product_id
+LEFT JOIN bid b
+	ON a.ad_id = b.ad_id
+GROUP BY 1
+ORDER BY 1
+	)
+	
+SELECT
+	model
+	, avg_price
+	, avg_bid_6month
+	, avg_price - avg_bid_6month difference
+	, ROUND((avg_price - avg_bid_6month) / avg_price * 100,2) different_percent
+FROM cte
+
+-- CASE 5 - Develop a window function average bid price of a car make and model over the last 6 months.
+
+SELECT
+	DISTINCT c.brand
+	, c.model
+	, COALESCE(ROUND(AVG(CASE 
+        WHEN EXTRACT(EPOCH FROM CURRENT_DATE - b.bid_date::timestamp) / 86400 <= 180 
+        THEN b.bid_price 
+        ELSE NULL 
+    END),2),0) AS avg_bid_6month
+	, COALESCE(ROUND(AVG(CASE 
+        WHEN EXTRACT(EPOCH FROM CURRENT_DATE - b.bid_date::timestamp) / 86400 <= 150 
+        THEN b.bid_price 
+        ELSE NULL 
+    END),2),0) AS avg_bid_5month
+	, COALESCE(ROUND(AVG(CASE 
+        WHEN EXTRACT(EPOCH FROM CURRENT_DATE - b.bid_date::timestamp) / 86400 <= 120 
+        THEN b.bid_price 
+        ELSE NULL 
+    END),2),0) AS avg_bid_4month
+	, COALESCE(ROUND(AVG(CASE 
+        WHEN EXTRACT(EPOCH FROM CURRENT_DATE - b.bid_date::timestamp) / 86400 <= 90 
+        THEN b.bid_price 
+        ELSE NULL 
+    END),2),0) AS avg_bid_3month
+	, COALESCE(ROUND(AVG(CASE 
+        WHEN EXTRACT(EPOCH FROM CURRENT_DATE - b.bid_date::timestamp) / 86400 <= 60 
+        THEN b.bid_price 
+        ELSE NULL 
+    END),2),0) AS avg_bid_2month
+	, COALESCE(ROUND(AVG(CASE 
+        WHEN EXTRACT(EPOCH FROM CURRENT_DATE - b.bid_date::timestamp) / 86400 <= 30 
+        THEN b.bid_price 
+        ELSE NULL 
+    END),2),0) AS avg_bid_1month
+FROM car c
+LEFT JOIN advertisement a
+	ON c.product_id = a.product_id
+LEFT JOIN bid b
+	ON a.ad_id = b.ad_id
+GROUP BY 1,2
+ORDER BY 1,2
