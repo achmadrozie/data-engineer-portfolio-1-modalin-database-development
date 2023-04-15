@@ -11,7 +11,7 @@ First thing first, in order to capture all of the files uploaded as follow:
 
 The most critical part to understand overall the project - can check on this file: 
 
-** Pacmann Project 1 - SQL - Modalin Database Development.pdf **
+**Pacmann Project 1 - SQL - Modalin Database Development.pdf**
 
 Since this are the report of overall project.
 After that, for the SQL of database development, you could check these files:
