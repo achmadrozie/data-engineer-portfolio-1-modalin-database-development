@@ -9,31 +9,31 @@ First thing first, in order to capture all of the files uploaded as follow:
 4. 2 PNG File (1 PNG File for ERD of Database, 1  PNG File for Logo of Modalin Company)
 
 
-The most critical part to understand overall the project as a <mark>report</mark> - can check on this file:
+The most critical part to understand overall the project as a **REPORT** - can check on this file:
  
 **Pacmann Project 1 - SQL - Modalin Database Development.pdf**
 
 
 Since this are the report of overall project.
-After that, for the _SQL of database development_, you could check these files:
+After that, for the **SQL of database development**, you could check these files:
 1. modalin.mssql
 2. transactional query.mssql
 3. analytical query.mssql
 
 
-and info related to the _ERD_ is available on picture with file name:
+and info related to the **ERD** is available on picture with file name:
 1. ERD Final.png
 
 
-and for the dataset that we use to fill the database as follow:
+and for the **dataset** that we use to fill the database as follow:
 1. Users
 2. City
 3. Car
 4. Advertisement
 5. Bid
 
-In other side, since we are generate the dataset using python, the code for dataset generation is attached on file with name:
+In other side, since we are generate the dataset using python, the **code for dataset generation** is attached on file with name:
 1. Pacmann Project 1 - SQL - Data Test Generation.ipynb
 
-Misscelaneous
+**Misscelaneous**
 1. Modalin.png (logo that i've made to complete the project as company logo)
