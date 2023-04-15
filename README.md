@@ -3,7 +3,7 @@ This project related to portfolio of Database Development of Used Car Company wi
 
 First thing first, in order to capture all of the files uploaded as follow:
 
-0. 1 PDF File - (Pacmann Project 1 - SQL - Modalin Database Development.pdf - All the information, outline, and detail description on database development process)
+0. 1 PDF File - (Project Overview (PDF) - Modalin Database Development.pdf - All the information, outline, and detail description on database development process)
 1. 3 mssql - (1 Database SQL, 1 Analytical Query, and 1 Transactional Query)
 2. 1 Python ipynb file (Provide Python Code in develop dummy dataset)
 3. 5 csv datasets (Users, City, Car, Advertisement, and Bid)
@@ -13,7 +13,7 @@ First thing first, in order to capture all of the files uploaded as follow:
 **1. PROJECT REPORT / OVERVIEW**
 The most critical part to understand overall the project as a REPORT - can check on this file:
  
-**Pacmann Project 1 - SQL - Modalin Database Development.pdf**
+**Project Overview (PDF) - Modalin Database Development.pdf**
 
 
 
