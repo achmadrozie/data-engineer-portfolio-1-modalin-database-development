@@ -9,18 +9,20 @@ First thing first, in order to capture all of the files uploaded as follow:
 4. 2 PNG File (1 PNG File for ERD of Database, 1  PNG File for Logo of Modalin Company)
 
 
-The most critical part to understand overall the project - can check on this file: 
-
+The most critical part to understand overall the project as a __report__ - can check on this file: 
 **Pacmann Project 1 - SQL - Modalin Database Development.pdf**
 
+
 Since this are the report of overall project.
-After that, for the SQL of database development, you could check these files:
+After that, for the _SQL of database development_, you could check these files:
 1. modalin.mssql
 2. transactional query.mssql
 3. analytical query.mssql
 
-and info related to the ERD is available on picture with file name:
+
+and info related to the _ERD_ is available on picture with file name:
 1. ERD Final.png
+
 
 and for the dataset that we use to fill the database as follow:
 1. Users
